@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כרטיס עבודה - בלומנפלד מכונות</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', Arial, sans-serif;
+    background: #e8e8e8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .page-wrapper {
+    width: 794px;
+    transform-origin: top center;
+  }
+
+  .page {
+    width: 794px;
+    height: 1123px;
+    background: #fff;
+    padding: 32px 50px 36px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  /*
+    Original layout:
+    - Company name "בלומנפלד מכונות" large, centered-right area
+    - Osek box top-left corner, vertically aligned with company name
+    - Address line centered below, spanning between osek box and right edge
+  */
+  .header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 2px;
+    padding-top: 4px;
+  }
+
+  .company-name {
+    font-size: 46px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 3px;
+    text-align: right;
+    margin-right: -25px; /* compensate for page padding (50px) minus desired 25px gap */
+  }
+
+  .osek-box {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    border: 2px solid #000;
+    padding: 6px 16px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .address-line {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 6px;
+    margin-bottom: 18px;
+  }
+
+  /* ===== ORDER NUMBER ROW =====
+    Original: "כרטיס עבודה מס'" on RIGHT, big "13" in CENTER, "תאריך ____" on LEFT
+  */
+  .order-number-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  .order-label {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .order-number {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 36px;
+    font-weight: 900;
+  }
+
+  .date-label {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== INPUTS ===== */
+  input[type="text"], input[type="tel"] {
+    border: none;
+    border-bottom: 1.5px solid #000;
+    outline: none;
+    font-family: 'Heebo', Arial, sans-serif;
+    font-size: 14px;
+    background: transparent;
+    text-align: right;
+    padding: 2px 4px;
+    direction: rtl;
+  }
+  input:focus { background: #fffde7; }
+  .date-input { width: 130px; }
+
+  /* ===== DETAILS BOX =====
+    Original: Two sections side by side in a bordered box.
+    RIGHT = פרטי המזמין (4 fields), LEFT = פרטי המכונה (3 fields)
+    Vertical divider between them.
+  */
+  .details-box {
+    border: 2px solid #000;
+    display: flex;
+    margin-bottom: 14px;
+  }
+
+  .details-section {
+    flex: 1;
+    padding: 10px 20px 8px;
+  }
+
+  /* In RTL, first-child is on the RIGHT = פרטי המזמין. It needs a LEFT border as divider */
+  .details-section:first-child {
+    border-left: 2px solid #000;
+  }
+
+  .details-section h3 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-decoration: underline;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 9px;
+    gap: 6px;
+    /* RTL handles right-to-left order naturally */
+  }
+
+  .detail-row label {
+    font-size: 15px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .detail-row input { flex: 1; }
+
+  /* ===== SECTION TITLES ===== */
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-align: right;
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+
+  /* ===== REPAIR TABLE =====
+    Original columns from RIGHT to LEFT: תאור (wide), שעות נסיעה, שעות עבודה
+    Headers "שעות עבודה" and "שעות נסיעה" are two-line with underline
+  */
+  .repair-header {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 6px;
+  }
+
+  .repair-header .col-desc {
+    flex: 1;
+    text-align: center;
+    font-weight: 400;
+    font-size: 15px;
+    text-decoration: underline;
+  }
+
+  .repair-header .col-hours {
+    width: 65px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: underline;
+    line-height: 1.3;
+  }
+
+  .repair-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .repair-row input.desc-input { flex: 1; }
+
+  .repair-row input.hours-input {
+    width: 60px;
+    text-align: center;
+    margin-right: 5px;
+  }
+
+  /* ===== TOTALS ROW =====
+    Original from RIGHT: סה"כ שעות ___, מחיר עבודה לשעה ___, מחיר עבודה ___
+  */
+  .totals-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 12px 0;
+  }
+
+  .total-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .total-item label {
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .total-item input { width: 90px; }
+
+  /* ===== PARTS TABLE =====
+    Original: 3 column pairs (תאור + מחיר) × 4 rows
+    RIGHT to LEFT: תאור, מחיר, תאור, מחיר, תאור, מחיר
+  */
+  .parts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+  }
+
+  .parts-table th {
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: underline;
+    padding: 2px 6px;
+    text-align: right;
+  }
+
+  .parts-table td {
+    padding: 3px 4px;
+  }
+
+  .parts-table input.part-desc { width: 100%; }
+
+  .parts-table input.part-price {
+    width: 54px;
+    text-align: center;
+  }
+
+  /* ===== PARTS TOTAL ===== */
+  .parts-total {
+    margin: 10px 0 6px;
+  }
+
+  .parts-total label {
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  .parts-total input {
+    width: 120px;
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ===== FOOTER =====
+    Original from RIGHT: שם הוצינ: ___, תאריך: ___, חתימה: ___, סה"כ כולל הכל ___
+  */
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 0;
+  }
+
+  .footer-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-item label {
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .footer-item input { width: 100px; }
+
+  .footer-item input.grand-total {
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page-wrapper { transform: none !important; height: auto !important; }
+    .page { box-shadow: none; }
+    input:focus { background: transparent; }
+    .fab-container { display: none !important; }
+  }
+
+  /* ===== FLOATING ACTION BUTTON ===== */
+  .fab-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    direction: rtl;
+  }
+
+  .fab-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #222;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+    transition: background 0.2s;
+  }
+
+  .fab-btn:hover { background: #444; }
+
+  .fab-menu {
+    display: none;
+    position: absolute;
+    top: 56px;
+    right: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    overflow: hidden;
+    min-width: 160px;
+  }
+
+  .fab-menu.open { display: block; }
+
+  .fab-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 18px;
+    border: none;
+    background: #fff;
+    font-family: 'Heebo', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.15s;
+  }
+
+  .fab-menu button:hover { background: #f3f3f3; }
+
+  .fab-menu button:not(:last-child) { border-bottom: 1px solid #eee; }
+
+  .fab-menu .menu-icon { font-size: 18px; }
+</style>
+</head>
+<body>
+
+<!-- Floating Action Button -->
+<div class="fab-container" id="fabContainer">
+  <button class="fab-btn" id="fabBtn" title="אפשרויות">⋮</button>
+  <div class="fab-menu" id="fabMenu">
+    <button id="btnPDF"><span class="menu-icon">📄</span>הורדה להדפסה</button>
+    <button id="btnShare"><span class="menu-icon">📤</span>שיתוף</button>
+  </div>
+</div>
+
+<div class="page-wrapper" id="pageWrapper">
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="osek-box">מס. עוסק מורשה<br>055444012</div>
+    <div class="company-name">בלומנפלד<br>מכונות</div>
+  </div>
+  <div class="address-line">ת.ד. 230 אור-יהודה 6025102 טלפון: 03-5718867</div>
+
+  <!-- Work Order Number Row -->
+  <div class="order-number-row">
+    <div class="order-label">כרטיס עבודה מס'</div>
+    <div class="order-number">13</div>
+    <div class="date-label">תאריך <input type="text" class="date-input"></div>
+  </div>
+
+  <!-- Details Box -->
+  <div class="details-box">
+    <!-- RIGHT section: פרטי המזמין -->
+    <div class="details-section">
+      <h3>פרטי המזמין</h3>
+      <div class="detail-row"><label>שם :</label><input type="text"></div>
+      <div class="detail-row"><label>כתובת :</label><input type="text"></div>
+      <div class="detail-row"><label>טלפון :</label><input type="tel"></div>
+      <div class="detail-row"><label>איש קשר :</label><input type="text"></div>
+    </div>
+    <!-- LEFT section: פרטי המכונה -->
+    <div class="details-section">
+      <h3>פרטי המכונה</h3>
+      <div class="detail-row"><label>שם :</label><input type="text"></div>
+      <div class="detail-row"><label>מודל :</label><input type="text"></div>
+      <div class="detail-row"><label>מס' סידרה :</label><input type="text"></div>
+    </div>
+  </div>
+
+  <!-- Repair Section -->
+  <div class="section-title">ביצוע תיקון</div>
+
+  <div class="repair-header">
+    <div class="col-desc">תאור</div>
+    <div class="col-hours">שעות<br>נסיעה</div>
+    <div class="col-hours">שעות<br>עבודה</div>
+  </div>
+
+  <div class="repair-row"><input type="text" class="desc-input"><input type="text" class="hours-input"><input type="text" class="hours-input"></div>
+  <div class="repair-row"><input type="text" class="desc-input"><input type="text" class="hours-input"><input type="text" class="hours-input"></div>
+  <div class="repair-row"><input type="text" class="desc-input"><input type="text" class="hours-input"><input type="text" class="hours-input"></div>
+  <div class="repair-row"><input type="text" class="desc-input"><input type="text" class="hours-input"><input type="text" class="hours-input"></div>
+
+  <!-- Totals -->
+  <div class="totals-row">
+    <div class="total-item"><label>סה"כ שעות</label><input type="text"></div>
+    <div class="total-item"><label>מחיר עבודה לשעה</label><input type="text"></div>
+    <div class="total-item"><label>מחיר עבודה</label><input type="text"></div>
+  </div>
+
+  <!-- Spare Parts -->
+  <div class="section-title">חלקי חילוף</div>
+
+  <table class="parts-table">
+    <thead>
+      <tr>
+        <th>תאור</th><th>מחיר</th>
+        <th>תאור</th><th>מחיר</th>
+        <th>תאור</th><th>מחיר</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+      </tr>
+      <tr>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+      </tr>
+      <tr>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+      </tr>
+      <tr>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+        <td><input type="text" class="part-desc"></td><td><input type="text" class="part-price"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Parts Total -->
+  <div class="parts-total">
+    <label>מחיר חלקים</label>
+    <input type="text">
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-row">
+    <div class="footer-item"><label>שם הנציג:</label><input type="text"></div>
+    <div class="footer-item"><label>תאריך:</label><input type="text"></div>
+    <div class="footer-item"><label>חתימה:</label><input type="text"></div>
+    <div class="footer-item"><label>סה"כ כולל הכל</label><input type="text" class="grand-total"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  (function() {
+    // Scale page
+    function scalePage() {
+      var wrapper = document.getElementById('pageWrapper');
+      var availableWidth = document.documentElement.clientWidth - 32;
+      var pageWidth = 794;
+      var scale = Math.min(1, availableWidth / pageWidth);
+      wrapper.style.transform = 'scale(' + scale + ')';
+      wrapper.style.transformOrigin = 'top center';
+      wrapper.style.height = (1123 * scale) + 'px';
+      wrapper.style.width = pageWidth + 'px';
+    }
+    scalePage();
+    window.addEventListener('resize', scalePage);
+
+    // FAB menu
+    var fabBtn = document.getElementById('fabBtn');
+    var fabMenu = document.getElementById('fabMenu');
+    var btnPDF = document.getElementById('btnPDF');
+    var btnShare = document.getElementById('btnShare');
+
+    fabBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fabMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function() {
+      fabMenu.classList.remove('open');
+    });
+
+    fabMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    btnPDF.addEventListener('click', function() {
+      fabMenu.classList.remove('open');
+      
+      // Bake input values
+      var inputs = document.querySelectorAll('.page input');
+      inputs.forEach(function(inp) {
+        inp.setAttribute('value', inp.value);
+      });
+
+      var pageEl = document.querySelector('.page');
+      var htmlContent = '<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>כרטיס עבודה 13</title>' +
+        '<style>' + document.querySelector('style').textContent + 
+        ' body{background:#fff;padding:0;} .page-wrapper{transform:none!important;height:auto!important;width:794px;} .page{box-shadow:none;} .fab-container{display:none!important;} @page{size:A4;margin:0;}' +
+        '</style></head><body><div class="page-wrapper"><div class="page">' + 
+        pageEl.innerHTML + 
+        '</div></div><script>window.onload=function(){window.print();}<\/script></body></html>';
+
+      var w = window.open('', '_blank');
+      if (w) {
+        w.document.write(htmlContent);
+        w.document.close();
+      } else {
+        alert('אנא אפשר חלונות קופצים כדי להוריד את הקובץ');
+      }
+    });
+
+    btnShare.addEventListener('click', function() {
+      fabMenu.classList.remove('open');
+      if (navigator.share) {
+        navigator.share({
+          title: 'כרטיס עבודה - בלומנפלד מכונות',
+          text: 'כרטיס עבודה מס\' 13',
+          url: window.location.href
+        }).catch(function() {});
+      } else {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('הקישור הועתק ללוח');
+          }).catch(function() {
+            alert('לא ניתן לשתף בדפדפן זה');
+          });
+        } else {
+          alert('לא ניתן לשתף בדפדפן זה');
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
